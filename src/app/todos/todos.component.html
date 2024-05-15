@@ -3,7 +3,7 @@
     <h1>My todos</h1>
     <button (click)="createTodo()">+ new</button>
     <ul>
-        <li 
+        <li (click)="deleteTodo(todo.id)"
             *ngFor="let todo of todos;">
             {{ todo.content }}
         </li>
