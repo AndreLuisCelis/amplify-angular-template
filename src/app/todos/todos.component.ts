@@ -14,6 +14,7 @@ const client = generateClient<Schema>();
 })
 export class TodosComponent implements OnInit {
   todos: any[] = [];
+  users: any[] = [];
 
   ngOnInit(): void {
     this.listTodos();
@@ -31,6 +32,18 @@ export class TodosComponent implements OnInit {
     }
   }
 
+  listUsers() {
+    try {
+      client.models?.User?.observeQuery().subscribe({
+        next: ({ items, isSynced }) => {
+          this.users = items;
+        },
+      });
+    } catch (error) {
+      console.error('error fetching todos', error);
+    }
+  }
+
   createTodo() {
     try {
       client.models.Todo.create({
@@ -40,6 +53,14 @@ export class TodosComponent implements OnInit {
     } catch (error) {
       console.error('error creating todos', error);
     }
+  }
+
+  createUser() {
+    console.log(client.models)
+      client.models?.User?.create({
+        name: window.prompt('User name'),
+      });
+      this.listUsers();
   }
 
   deleteTodo(id: string) {

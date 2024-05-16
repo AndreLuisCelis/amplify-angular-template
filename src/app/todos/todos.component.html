@@ -16,3 +16,20 @@
         </a>
     </div>
 </main>
+<div>
+    <h1>My users</h1>
+    <button (click)="createUser()">+ new</button>
+    <ul>
+        <li 
+            *ngFor="let user of users;">
+            {{ user.name }}
+        </li>
+    </ul>
+    <div>
+        🥳 App successfully hosted. Try creating a new todo.
+        <br />
+        <a href="https://docs.amplify.aws/gen2/start/quickstart/">
+            Review next steps of this tutorial.
+        </a>
+    </div>
+</div>
