@@ -15,9 +15,18 @@ const client = generateClient<Schema>();
 export class TodosComponent implements OnInit {
   todos: any[] = [];
   users: any[] = [];
-
+  ads: any [] = [];
+  
   ngOnInit(): void {
+    this.listUsers();
     this.listTodos();
+    
+  }
+
+  ngAfterViewInit(): void {
+    this.listUsers();
+    this.listTodos();
+    this.listAds();
   }
 
   listTodos() {
@@ -32,9 +41,21 @@ export class TodosComponent implements OnInit {
     }
   }
 
+  listAds() {
+    try {
+      client.models.Ads.observeQuery().subscribe({
+        next: ({ items, isSynced }) => {
+          this.ads = items;
+        },
+      });
+    } catch (error) {
+      console.error('error fetching todos', error);
+    }
+  }
+
   listUsers() {
     try {
-      client.models?.User?.observeQuery().subscribe({
+      client.models.User.observeQuery().subscribe({
         next: ({ items, isSynced }) => {
           this.users = items;
         },
@@ -55,15 +76,42 @@ export class TodosComponent implements OnInit {
     }
   }
 
-  createUser() {
-    console.log(client.models)
-      client.models?.User?.create({
+  createAds() {
+    try {
+      client.models.Ads.create({
+        title: window.prompt('Ads Title'),
+      });
+      this.listTodos();
+    } catch (error) {
+      console.error('error creating todos', error);
+    }
+  }
+
+ async createUser() {
+    try {
+      console.log(client.models)
+     await client.models?.User?.create({
         name: window.prompt('User name'),
+        email: 'teste@email.com'
+      }, {
+        authMode: 'userPool'
       });
       this.listUsers();
+    } catch (error) {
+      console.error('error creating todos', error);
+    }
+     
   }
 
   deleteTodo(id: string) {
     client.models.Todo.delete({ id })
+  }
+
+  deleteUser(id: string) {
+    client.models.User.delete({ id })
+  }
+
+  deleteAds(id: string) {
+    client.models.Ads.delete({ id })
   }
 }

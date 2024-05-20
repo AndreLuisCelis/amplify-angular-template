@@ -11,20 +11,20 @@ const schema = a.schema({
     .model({
       content: a.string(),
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow) => [allow.authenticated().to(['read']),allow.owner()]),
   
   User: a
     .model({
       name: a.string(),
       email: a.string()
-    }).authorization((allow) => [allow.owner(), allow.publicApiKey()]),
+    }).authorization((allow) => [allow.authenticated().to(['read']),allow.owner()]),
   
     Ads: a
     .model({
       title: a.string(),
       description: a.string()
-    }).authorization((allow) => [allow.owner(), allow.publicApiKey()]),
-});
+    }).authorization((allow) => [allow.owner(), allow.authenticated().to(['read'])]),
+})
 
 export type Schema = ClientSchema<typeof schema>;
 
@@ -34,12 +34,14 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'userPool', 
+    defaultAuthorizationMode: 'userPool',
+    
     // API Key is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },
   },
+
 });
 
 /*== STEP 2 ===============================================================

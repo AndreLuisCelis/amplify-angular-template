@@ -1,0 +1,12 @@
+.form-ads {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    mat-form-field {
+        min-width: 330px;
+        max-width: 650px;
+    }
+    button {
+        margin-left: auto !important;
+    }
+}

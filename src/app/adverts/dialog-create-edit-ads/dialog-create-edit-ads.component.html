@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Adicionar Anuncio</h2>
+<mat-dialog-content>
+ <form  [formGroup] = 'formAds' class="form-ads">
+        <mat-form-field class="example-form-field">
+            <mat-label>Titulo</mat-label>
+            <input matInput type="text" formControlName = 'title' placeholder="Titulo">
+            @if (formAds.controls['title']) {
+              <button matSuffix mat-icon-button aria-label="Clear"
+              (click)="formAds.controls['title'].reset()">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+            @if (formAds.controls['title'].hasError('required')) {
+                <mat-error>O campo título é  <strong>obrigatório</strong></mat-error>
+              }
+        </mat-form-field>
+    
+        <mat-form-field class="descricao">
+            <mat-label>Descrição</mat-label>
+            <textarea matInput placeholder="Descrição" formControlName="description"></textarea>
+            @if (formAds.controls['description'].hasError('required')) {
+                <mat-error>O campo descrição é  <strong>obrigatório</strong></mat-error>
+              }
+        </mat-form-field>
+      
+        <button mat-raised-button (click)="registerAds()">Cadastrar</button>
+ </form>
+</mat-dialog-content>

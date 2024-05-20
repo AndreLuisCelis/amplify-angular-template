@@ -1,0 +1,45 @@
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 200px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+#navigation-info {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  h2 {
+    margin-left: auto;
+  }
+}
+
+.link-active {
+  filter: brightness(110%);
+}
+
+.side-nav-menu {
+  a {
+    display: flex;
+    align-items: center;
+    mat-icon {
+      margin-right: 5px;
+      font-size: 18px;
+      margin-bottom: -8px;
+    }
+    label {
+     
+    }
+  }
+}
