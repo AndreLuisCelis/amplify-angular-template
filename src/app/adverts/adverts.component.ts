@@ -53,7 +53,9 @@ export class AdvertsComponent {
   }
 
   openModalCreateAd(){
-    this.dialog.open(DialogCreateEditAdsComponent)
+    this.dialog.open(DialogCreateEditAdsComponent, {
+      minWidth:350
+    })
     .afterClosed().subscribe({
       next: ad=> {
         if(ad){
