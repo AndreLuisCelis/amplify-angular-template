@@ -28,7 +28,7 @@ export class DialogCreateEditAdsComponent {
   formAds = this.fb.group({
     title:[ this.data?this.data.title: '', Validators.required],
     description:[ this.data?this.data.description: '', Validators.required],
-    id:[ this.data?this.data.id: 'teste']
+    id:[ this.data?this.data.id: '']
   })
 
   constructor(
