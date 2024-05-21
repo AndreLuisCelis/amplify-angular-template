@@ -1,5 +1,9 @@
+<div class="container ">
+    <button mat-raised-button (click)="openModalCreateAd()">Adicíonar anúncio</button>
+</div>
+
 <div class="ads">
-    <mat-card class="ads-card" *ngFor="let ad of ads">
+    <mat-card class="ads-card" *ngFor="let ad of ads" >
         <mat-card-header>
           <div mat-card-avatar class="ads-header-image"></div>
           <mat-card-title>{{ad.title}}</mat-card-title>
@@ -11,8 +15,10 @@
           </p>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-button>LIKE</button>
           <button mat-button>SHARE</button>
+          <button mat-button (click)="openModalUpdateAd(ad)">EDIT</button>
+          <button mat-button (click)="deleteAds(ad.id)">DELETE</button>
         </mat-card-actions>
       </mat-card>
 </div>
+

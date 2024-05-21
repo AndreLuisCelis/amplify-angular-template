@@ -52,10 +52,11 @@ export class NavigationComponent implements OnInit {
       label: 'Anuncios'
     },
     {
-      icon: 'task_alt',
-      path: '/todos',
-      label: 'Todos'
+      icon: 'add_task',
+      path: '/my-ads',
+      label: 'Meus Anuncíos'
     }
+    
   ]
 
   @Input() user: any;
