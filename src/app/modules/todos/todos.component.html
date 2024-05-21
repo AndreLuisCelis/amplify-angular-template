@@ -16,21 +16,7 @@
         </a>
     </div>
 </main>
-<div>
-    <h1>My Ads</h1>
-    <button (click)="createAds()">+ new</button>
-    <ul>
-        <li (click)="deleteAds(ad.id)"
-            *ngFor="let ad of ads;">
-            {{ ad.title }}
-        </li>
-    </ul>
-    <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-       
-    </div>
-</div>
+
 <div>
     <h1>My users</h1>
     <button (click)="createUser()">+ new</button>

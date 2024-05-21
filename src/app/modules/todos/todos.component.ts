@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../../amplify/data/resource';
+import type { Schema } from '../../../../amplify/data/resource';
 
 const client = generateClient<Schema>();
 
@@ -76,16 +76,6 @@ export class TodosComponent implements OnInit {
     }
   }
 
-  createAds() {
-    try {
-      client.models.Ads.create({
-        title: window.prompt('Ads Title'),
-      });
-      this.listTodos();
-    } catch (error) {
-      console.error('error creating todos', error);
-    }
-  }
 
  async createUser() {
     try {

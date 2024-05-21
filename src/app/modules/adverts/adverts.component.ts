@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { generateClient } from 'aws-amplify/api';
-import { Schema } from '../../../amplify/data/resource';
+import { Schema } from '../../../../amplify/data/resource';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card'
 
 import {
   MatDialog,
@@ -11,19 +12,20 @@ import {
 } from '@angular/material/dialog';
 import { DialogCreateEditAdsComponent } from './dialog-create-edit-ads/dialog-create-edit-ads.component';
 import { CommonModule } from '@angular/common';
+import { AdsInterface } from '../../models/ads.interface';
 
 const client = generateClient<Schema>();
 
 @Component({
   selector: 'app-adverts',
   standalone: true,
-  imports: [MatButtonModule , CommonModule],
+  imports: [MatButtonModule , CommonModule, MatCardModule],
   templateUrl: './adverts.component.html',
   styleUrl: './adverts.component.scss'
 })
 export class AdvertsComponent {
 
-  ads: any[] = [];
+  ads: AdsInterface[] = [];
 
   constructor(public dialog: MatDialog){}
 
@@ -54,7 +56,7 @@ export class AdvertsComponent {
 
   openModalCreateAd(){
     this.dialog.open(DialogCreateEditAdsComponent, {
-      minWidth:350
+      maxWidth:'100%',
     })
     .afterClosed().subscribe({
       next: ad=> {

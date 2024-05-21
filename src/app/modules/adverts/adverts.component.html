@@ -1,0 +1,29 @@
+<div class="container ads">
+    <button mat-raised-button (click)="openModalCreateAd()">Adiconar anuncio</button>
+</div>
+
+<div class="ads">
+    <ul>
+        <li *ngFor="let ad of ads" (click)="deleteAds(ad.id)">
+            {{ad.title}}
+        </li>
+    </ul>
+
+    <mat-card class="ads-card" *ngFor="let ad of ads" (click)="deleteAds(ad.id)">
+        <mat-card-header>
+          <div mat-card-avatar class="ads-header-image"></div>
+          <mat-card-title>{{ad.title}}</mat-card-title>
+        </mat-card-header>
+        <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+        <mat-card-content>
+          <p>
+           {{ad.description}}
+          </p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button>LIKE</button>
+          <button mat-button>SHARE</button>
+        </mat-card-actions>
+      </mat-card>
+    
+</div>

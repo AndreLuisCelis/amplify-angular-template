@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { AdvertsComponent } from './adverts/adverts.component';
-import { TodosComponent } from './todos/todos.component';
+import { AdvertsComponent } from './modules/adverts/adverts.component';
+import { TodosComponent } from './modules/todos/todos.component';
 
 export const routes: Routes = [
     {

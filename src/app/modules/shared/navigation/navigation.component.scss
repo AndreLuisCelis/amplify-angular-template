@@ -20,7 +20,7 @@
   display: flex;
   width: 100%;
   align-items: center;
-  h2 {
+  h2{
     margin-left: auto;
   }
 }
@@ -42,4 +42,17 @@
      
     }
   }
+}
+
+@media (max-width: 599px) {
+    #user-email {
+      display: none;
+    }
+    
+    #navigation-info {
+      button {
+        margin-left: auto;
+      }
+    }
+
 }

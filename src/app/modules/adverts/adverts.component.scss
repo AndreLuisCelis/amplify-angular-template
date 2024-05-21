@@ -1,0 +1,17 @@
+.container {
+    padding: 10px;
+}
+
+.ads-card {
+    max-width: 400px;
+  }
+  
+  .ads-header-image {
+    background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+    background-size: cover;
+  }
+
+
+@media (max-width: 599px) {
+    
+    }
