@@ -28,7 +28,6 @@ export class DialogCreateEditAdsComponent {
   formAds = this.fb.group({
     title:[ this.data?this.data.title: '', Validators.required],
     description:[ this.data?this.data.description: '', Validators.required],
-    id:[ this.data?this.data.id: 'teste']
   })
 
   constructor(
@@ -37,9 +36,13 @@ export class DialogCreateEditAdsComponent {
     private fb:FormBuilder) {}
 
     registerAds(){
-      console.log(this.formAds.valid)
       if(this.formAds.valid){
-        this.dialogRef.close(this.formAds.value)
+        if(this.data?.id) {
+          let ad = {id: this.data.id,...this.formAds.value};
+          this.dialogRef.close(ad);
+          return;
+        }
+        this.dialogRef.close(this.formAds.value);
       }
       return
     }
