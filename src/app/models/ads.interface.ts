@@ -1,11 +1,15 @@
 import { CommentInterface } from "./comment.interface";
 import { UserInterface } from "./user.interface";
 
+
 export interface AdsInterface {
-    id: string;
     title: string;
     description: string;
-    images?: string[];
+    images?: string[] | any;
     comments?: CommentInterface[];
-    ownerId?: UserInterface["id"]
+    ownerId?: UserInterface["id"];
+}
+
+export interface EditAdsInterface extends AdsInterface {
+    id: string;
 }

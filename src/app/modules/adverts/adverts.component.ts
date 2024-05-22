@@ -4,7 +4,7 @@ import { Schema } from '../../../../amplify/data/resource';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card'
 import { CommonModule } from '@angular/common';
-import { AdsInterface } from '../../models/ads.interface';
+import { AdsInterface } from "../../models/ads.interface";
 
 const client = generateClient<Schema>();
 

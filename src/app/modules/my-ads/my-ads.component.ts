@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AdsInterface } from '../../models/ads.interface';
+import { EditAdsInterface } from '../../models/ads.interface';
+import { AdsInterface } from "../../models/ads.interface";
 import { DialogCreateEditAdsComponent } from './dialog-create-edit-ads/dialog-create-edit-ads.component';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../../../amplify/data/resource';
@@ -8,6 +9,8 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
+import { uploadData } from "aws-amplify/storage";
+
 
 
 const client = generateClient<Schema>();
@@ -21,7 +24,7 @@ const client = generateClient<Schema>();
 })
 export class MyAdsComponent {
 
-  ads: AdsInterface[] = [];
+  ads: EditAdsInterface[] = [];
 
   constructor(
     public dialog: MatDialog, 
@@ -55,10 +58,12 @@ export class MyAdsComponent {
     }
   }
 
-  updateAd(ad: AdsInterface) {
+  updateAd(ad: EditAdsInterface) {
     try {
-      client.models.Ads.update(ad);
-      this.listMyAds();
+      if(ad.id){
+        client.models.Ads.update(ad);
+        this.listMyAds();
+      }
     } catch (error) {
       console.error('error creating todos', error);
     }
@@ -69,21 +74,34 @@ export class MyAdsComponent {
       maxWidth:'100%',
     })
     .afterClosed().subscribe({
-      next: (ad: AdsInterface)=> {
-        if(ad){
+      next: (res)=> {
+        if(res){
+          try {
+             uploadData({
+              data: res.result,
+              path: `picture-submissions/${res.file.name}`
+            });
+          } catch (e) {
+            console.log("error", e);
+          }
+          let ad:AdsInterface = {
+            title: res.data.title,
+            description: res.data.description,
+            images:[`picture-submissions/${res.file.name}`]
+          }
           this.createAd(ad)
         }
       }
     })
   }
 
-  openModalUpdateAd(ad: AdsInterface){
+  openModalUpdateAd(ad: EditAdsInterface){
     this.dialog.open(DialogCreateEditAdsComponent, {
       maxWidth:'100%',
       data: ad
     })
     .afterClosed().subscribe({
-      next: (adRes: AdsInterface)=> {
+      next: (adRes: EditAdsInterface)=> {
         if(adRes){
           this.updateAd(adRes)
         }

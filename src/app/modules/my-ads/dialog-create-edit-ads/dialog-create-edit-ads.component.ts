@@ -5,7 +5,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { AdsInterface } from '../../../models/ads.interface';
+import { AdsInterface, EditAdsInterface } from "../../../models/ads.interface";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dialog-create-edit-ads',
@@ -18,7 +19,8 @@ import { AdsInterface } from '../../../models/ads.interface';
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
-    MatInputModule],
+    MatInputModule,
+    CommonModule],
   templateUrl: './dialog-create-edit-ads.component.html',
   styleUrl: './dialog-create-edit-ads.component.scss'
 })
@@ -30,20 +32,42 @@ export class DialogCreateEditAdsComponent {
     description:[ this.data?this.data.description: '', Validators.required],
   })
 
+  selectedFileAdd: any = null;
+  srcPreviewAdd: string | ArrayBuffer ='';
+
   constructor(
     public dialogRef: MatDialogRef<DialogCreateEditAdsComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AdsInterface,
+    @Inject(MAT_DIALOG_DATA) public data: EditAdsInterface,
     private fb:FormBuilder) {}
 
     registerAds(){
       if(this.formAds.valid){
         if(this.data?.id) {
           let ad = {id: this.data.id,...this.formAds.value};
-          this.dialogRef.close(ad);
+          this.dialogRef.close({
+            data:ad, 
+            file: this.selectedFileAdd,
+            result: this.srcPreviewAdd});
           return;
         }
-        this.dialogRef.close(this.formAds.value);
+        this.dialogRef.close({
+          data: this.formAds.value, 
+          file:this.selectedFileAdd,
+          resust: this.srcPreviewAdd});
       }
       return
+    }
+
+    onFileSelectedAdd(event: any) {
+      if(!event){
+        return
+      }
+      this.selectedFileAdd = event.target.files[0] ?? null;
+      const reader = new FileReader();
+      reader.onloadend = ()=> {
+        this.srcPreviewAdd = reader.result?? ''
+      }
+      reader.readAsDataURL(this.selectedFileAdd);
+      return reader;
     }
 }

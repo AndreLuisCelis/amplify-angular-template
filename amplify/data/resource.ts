@@ -22,7 +22,8 @@ const schema = a.schema({
     Ads: a
     .model({
       title: a.string().required(),
-      description: a.string().required()
+      description: a.string().required(),
+      images: a.string().array()
     }).authorization((allow) => [allow.owner(), allow.authenticated().to(['read'])]),
 })
 
