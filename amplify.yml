@@ -9,9 +9,10 @@ frontend:
   phases:
     build:
       commands:
+        - nvm install 20.13.1
         - npm install -g @angular/cli
         - ng version
-        - ng build --configuration=production
+        - npm run build
   artifacts:
     baseDirectory: dist/amplify-angular-template/browser
     files:
