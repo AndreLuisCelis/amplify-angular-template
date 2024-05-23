@@ -80,7 +80,7 @@ export class MyAdsComponent {
           try {
              await uploadData({
               data: res.result,
-              path: `profile-pictures/${res.file.name}`
+              path: `picture-submissions/${res.file.name}`
             }).result.then( resultado => console.log('resultado', resultado));
           } catch (e) {
             console.log("error", e);
@@ -88,7 +88,7 @@ export class MyAdsComponent {
           let ad:AdsInterface = {
             title: res.data.title,
             description: res.data.description,
-            images:[`profile-pictures/${res.file.name}`]
+            images:[`picture-submissions/${res.file.name}`]
           }
           this.createAd(ad)
         }
