@@ -1,6 +1,9 @@
 {
   "name": "amplify-angular-template",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=18.19.1"
+    },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -45,8 +48,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "tsx": "^4.7.2",
     "typescript": "^5.4.5"
-  },
-  "engines": {
-    "node": ">=18.19.1"
-    }
+  }
 }
