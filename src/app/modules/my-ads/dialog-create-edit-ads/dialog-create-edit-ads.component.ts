@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { AdsInterface, EditAdsInterface } from "../../../models/ads.interface";
+import { EditAdsInterface } from "../../../models/ads.interface";
 import { CommonModule } from '@angular/common';
 
 @Component({
