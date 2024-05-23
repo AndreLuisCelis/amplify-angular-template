@@ -74,20 +74,21 @@ export class MyAdsComponent {
       maxWidth:'100%',
     })
     .afterClosed().subscribe({
-      next: (res)=> {
+      next: async (res)=> {
+        console.log( res)
         if(res){
           try {
-             uploadData({
+             await uploadData({
               data: res.result,
-              path: `picture-submissions/${res.file.name}`
-            });
+              path: `profile-pictures/${res.file.name}`
+            }).result.then( resultado => console.log('resultado', resultado));
           } catch (e) {
             console.log("error", e);
           }
           let ad:AdsInterface = {
             title: res.data.title,
             description: res.data.description,
-            images:[`picture-submissions/${res.file.name}`]
+            images:[`profile-pictures/${res.file.name}`]
           }
           this.createAd(ad)
         }

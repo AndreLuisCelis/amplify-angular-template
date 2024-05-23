@@ -18,7 +18,7 @@
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js",
-              "src/polyfills.ts"
+              "src/aws-polyfills.ts"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -79,7 +79,8 @@
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "src/aws-polyfills.ts"
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
