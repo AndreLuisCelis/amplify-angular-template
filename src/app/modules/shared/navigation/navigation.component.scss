@@ -3,11 +3,18 @@
 }
 
 .sidenav {
-  width: 200px;
+  width: 230px;
 }
 
 .sidenav .mat-toolbar {
-  background: inherit;
+  background-color: inherit;
+  p {
+    font-size: small;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
 }
 
 .mat-toolbar.mat-primary {

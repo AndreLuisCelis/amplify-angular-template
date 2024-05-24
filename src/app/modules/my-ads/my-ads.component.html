@@ -8,8 +8,8 @@
           <div mat-card-avatar class="ads-header-image"></div>
           <mat-card-title>{{ad.title}}</mat-card-title>
         </mat-card-header>
-        <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-        <img src="https://amplify-d1i7n24tkfv9cw-ma-amplifyteamdrivebucket28-xuviy5jfvgzt.s3.amazonaws.com/picture-submissions/32(11).png" alt="">
+        <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
+        <img src="{{ad.images[0]}}" alt="imagem do anuncio">
         <mat-card-content>
           <p>
            {{ad.description}}
@@ -22,4 +22,5 @@
         </mat-card-actions>
       </mat-card>
 </div>
+
 

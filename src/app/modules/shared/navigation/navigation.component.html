@@ -3,14 +3,28 @@
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
       [opened]="(isHandset$ | async) === false">
-    <mat-toolbar color="primary">Menu</mat-toolbar>
+
+    <mat-toolbar color="primary">
+      <p>{{user?.signInDetails?.loginId}}</p>
+    </mat-toolbar>
+
     <mat-nav-list class="side-nav-menu">
-      <a mat-list-item *ngFor="let menuItem of menuNav"
-        routerLink ="{{menuItem.path}}"
-        routerLinkActive = 'link-active'>
-        <mat-icon>{{menuItem.icon}}</mat-icon>
-        <label>{{menuItem.label}}</label>
-      </a>
+        @if(isHandset$ | async) {
+          <a mat-list-item *ngFor="let menuItem of menuNav" 
+          routerLink="{{menuItem.path}}" 
+          routerLinkActive ='link-active'
+          (click)="drawer.toggle()">
+          <mat-icon >{{menuItem.icon}}</mat-icon>
+          <label >{{menuItem.label}}</label></a>
+          
+        } @else {
+          <a mat-list-item *ngFor="let menuItem of menuNav" 
+          routerLink="{{menuItem.path}}" 
+          routerLinkActive ='link-active'>
+          <mat-icon >{{menuItem.icon}}</mat-icon>
+          <label >{{menuItem.label}}</label></a>
+        }
+    
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>

@@ -4,7 +4,8 @@
           <div mat-card-avatar class="ads-header-image"></div>
           <mat-card-title>{{ad.title}}</mat-card-title>
         </mat-card-header>
-        <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+        <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
+        <img src="{{ad.images ? ad.images[0] : ''}}" alt="imagem do anuncio">
         <mat-card-content>
           <p>
            {{ad.description}}

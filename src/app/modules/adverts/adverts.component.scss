@@ -13,7 +13,20 @@
 
 .ads-card {
     max-width: 355px;
-    
+    width: 100%;
+    min-height: 60vh;
+    justify-content: space-between;
+    img {
+          margin: 10px auto;
+          padding: 10px;
+          width: fit-content;
+          height: fit-content;
+          max-width: 330px !important;
+          max-height: 330px; 
+          align-self: center;
+          border-radius: 20px;
+          margin-bottom: 10px;
+      }
   }
   
   .ads-header-image {
@@ -22,8 +35,11 @@
   }
 
 
-@media (max-width: 760px) {
+  @media (max-width: 760px) {
     .ads {
         justify-content: center;
     }
+    .ads-card {
+        margin-bottom: 15px;
     }
+}

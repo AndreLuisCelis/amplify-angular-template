@@ -28,8 +28,8 @@ export class DialogCreateEditAdsComponent {
 
 
   formAds = this.fb.group({
-    title:[ this.data?this.data.title: 'Teste', Validators.required],
-    description:[ this.data?this.data.description: 'Teste', Validators.required],
+    title:[ this.data?this.data.title: '', Validators.required],
+    description:[ this.data?this.data.description: '', Validators.required],
   })
 
   selectedFileAdd: any = null;
@@ -68,6 +68,7 @@ export class DialogCreateEditAdsComponent {
         this.srcPreviewAdd = reader.result?? ''
       }
       reader.readAsDataURL(this.selectedFileAdd);
+      // reader.readAsArrayBuffer(this.selectedFileAdd);
       return reader;
     }
 }
