@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { uploadData } from "aws-amplify/storage";
 import { getUrl } from 'aws-amplify/storage';
+import { aws_location } from 'aws-cdk-lib';
 
 
 
@@ -25,7 +26,7 @@ const client = generateClient<Schema>();
 })
 export class MyAdsComponent {
 
-  ads: EditAdsInterface[] = [];
+  myAds: EditAdsInterface[] = [];
   srcTesteImg ='';
 
   constructor(
@@ -40,23 +41,25 @@ export class MyAdsComponent {
   listMyAds() {
     try {
       client.models.Ads.observeQuery().subscribe({
-        next: async ({ items, isSynced }) => {
-          this.ads = items.filter(ad => {
-            return ad.owner === this.authenticator.user.userId
-          });
-          let adsForUrl = this.ads.filter( ad => {
-            return ad.images.length>0;
+        next:  async ({ items, isSynced }) => {
+
+       // filter ads from awners
+       this.myAds =  items.filter(adFilterUser => {
+            return adFilterUser.owner === this.authenticator.user.userId
           })
-          const linkToStorageFile = await getUrl({
-            path: adsForUrl[0].images[0],
-            // Alternatively, path: ({identityId}) => `album/{identityId}/1.jpg`
-            options: {
-              validateObjectExistence: false,  // defaults to false
-              expiresIn: 20, // validity of the URL, in seconds. defaults to 900 (15 minutes) and maxes at 3600 (1 hour)
-            },
+
+       // get url for images 
+       this.myAds.map (async (adMapForAddSrcImage: any, index) => {
+              let urlOutput = await getUrl({
+                path: adMapForAddSrcImage.images[0],
+                options: {
+                  validateObjectExistence: false,  // defaults to false
+                  expiresIn: 3600, // validity of the URL, in seconds. defaults to 900 (15 minutes) and maxes at 3600 (1 hour)
+                }
+              })
+               adMapForAddSrcImage.srcImage = urlOutput.url.toString();
+               this.myAds[index] = adMapForAddSrcImage;
           });
-          // console.log('signed URL: ', linkToStorageFile.url);
-          this.srcTesteImg = linkToStorageFile.url.toString()
         },
       });
     } catch (error) {
@@ -91,18 +94,21 @@ export class MyAdsComponent {
     .afterClosed().subscribe({
       next: async (res)=> {
         if(res){
+          let path ='';
           try {
              await uploadData({
               data: res.result,
               path: `profile-pictures/${res.file.name}`
-            }).result.then( resultado => console.log('resultado', resultado));
+            }).result.then( resultado => {
+              path = resultado.path;
+          });
           } catch (e) {
             console.log("error", e);
           }
           let ad:AdsInterface = {
             title: res.data.title,
             description: res.data.description,
-            images:[res.result]
+            images:[path]
           }
           this.createAd(ad)
         }
@@ -116,13 +122,24 @@ export class MyAdsComponent {
       data: ad
     })
     .afterClosed().subscribe({
-      next: (adRes)=> {
+      next: async (adRes)=> {
         if(adRes){
+          let path ='';
+          try {
+             await uploadData({
+              data: adRes.result,
+              path: `profile-pictures/${adRes.file.name}`
+            }).result.then( resultado => {
+              path = resultado.path;
+          });
+          } catch (e) {
+            console.log("error", e);
+          }
           let ad:EditAdsInterface = {
             id: adRes.data.id,
             title: adRes.data.title,
             description: adRes.data.description,
-            images:[adRes.result]
+            images:[path]
           }
           this.updateAd(ad)
         }

@@ -34,6 +34,7 @@ export class DialogCreateEditAdsComponent {
 
   selectedFileAdd: any = null;
   srcPreviewAdd: string | ArrayBuffer ='';
+  arrayBufferForData: string | ArrayBuffer ='';
 
   constructor(
     public dialogRef: MatDialogRef<DialogCreateEditAdsComponent>,
@@ -45,15 +46,17 @@ export class DialogCreateEditAdsComponent {
         if(this.data?.id) {
           let ad = {id: this.data.id,...this.formAds.value};
           this.dialogRef.close({
-            data:ad, 
             file: this.selectedFileAdd,
-            result: this.srcPreviewAdd});
+            data:ad, 
+            imgBase64: this.srcPreviewAdd,
+            result: this.arrayBufferForData});
           return;
         }
         this.dialogRef.close({
+          file: this.selectedFileAdd,
           data: this.formAds.value, 
-          file:this.selectedFileAdd,
-          result: this.srcPreviewAdd});
+          imgBase64:this.srcPreviewAdd,
+          result: this.arrayBufferForData});
       }
       return
     }
@@ -63,12 +66,23 @@ export class DialogCreateEditAdsComponent {
         return
       }
       this.selectedFileAdd = event.target.files[0] ?? null;
+      this.getResulForSrcPreviewImg(this.selectedFileAdd);
+      this.getResulForArrayBufferData(this.selectedFileAdd);
+    }
+
+    getResulForSrcPreviewImg( selectedFile: any){
       const reader = new FileReader();
       reader.onloadend = ()=> {
         this.srcPreviewAdd = reader.result?? ''
       }
-      reader.readAsDataURL(this.selectedFileAdd);
-      // reader.readAsArrayBuffer(this.selectedFileAdd);
-      return reader;
+      reader.readAsDataURL(selectedFile);
+    }
+
+    getResulForArrayBufferData( selectedFile: any){
+      const reader = new FileReader();
+      reader.onloadend = ()=> {
+        this.arrayBufferForData = reader.result?? ''
+      }
+      reader.readAsArrayBuffer(selectedFile);
     }
 }
