@@ -3,13 +3,13 @@
 </div>
 
 <div class="ads">
-    <mat-card class="ads-card" *ngFor="let ad of ads" >
+    <mat-card class="ads-card" *ngFor="let ad of myAds" >
         <mat-card-header>
           <div mat-card-avatar class="ads-header-image"></div>
           <mat-card-title>{{ad.title}}</mat-card-title>
         </mat-card-header>
         <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
-        <img src="{{ad.images[0]}}" alt="imagem do anuncio">
+        <img src="{{ad.srcImage}}" alt="imagem do anuncio">
         <mat-card-content>
           <p>
            {{ad.description}}
