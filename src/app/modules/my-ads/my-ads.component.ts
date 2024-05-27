@@ -12,6 +12,7 @@ import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { uploadData } from "aws-amplify/storage";
 import { getUrl } from 'aws-amplify/storage';
 import { aws_location } from 'aws-cdk-lib';
+import { single } from 'rxjs';
 
 
 
@@ -20,52 +21,79 @@ const client = generateClient<Schema>();
 @Component({
   selector: 'app-my-ads',
   standalone: true,
-  imports: [MatButtonModule , CommonModule, MatCardModule],
+  imports: [MatButtonModule, CommonModule, MatCardModule],
   templateUrl: './my-ads.component.html',
   styleUrl: './my-ads.component.scss'
 })
 export class MyAdsComponent {
 
   myAds: EditAdsInterface[] = [];
-  srcTesteImg ='';
+  srcTesteImg = '';
 
   constructor(
-    public dialog: MatDialog, 
+    public dialog: MatDialog,
     private authenticator: AuthenticatorService,
-  ){}
+  ) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.listMyAds();
   }
 
   listMyAds() {
+    this.getMyAds();
+  }
+  
+  getMyAds(): void {
     try {
       client.models.Ads.observeQuery().subscribe({
-        next:  async ({ items, isSynced }) => {
-
-       // filter ads from awners
-       this.myAds =  items.filter(adFilterUser => {
+        next: async ({ items, isSynced }) => {
+          this.myAds = items.filter(adFilterUser => {
             return adFilterUser.owner === this.authenticator.user.userId
-          })
-
-       // get url for images 
-       this.myAds.map (async (adMapForAddSrcImage: any, index) => {
-              let urlOutput = await getUrl({
-                path: adMapForAddSrcImage.images[0],
-                options: {
-                  validateObjectExistence: false,  // defaults to false
-                  expiresIn: 3600, // validity of the URL, in seconds. defaults to 900 (15 minutes) and maxes at 3600 (1 hour)
-                }
-              })
-               adMapForAddSrcImage.srcImage = urlOutput.url.toString();
-               adMapForAddSrcImage.srcPublicImage = urlOutput.url.origin + urlOutput.url.pathname;
-               console.log('urlOutput',urlOutput.url)
-               this.myAds[index] = adMapForAddSrcImage;
           });
-        },
+          this.getUrlImagesMyAds();
+        }
       });
     } catch (error) {
-      console.error('error fetching todos', error);
+      console.error('error fetching myAds', error);
+    }
+  }
+
+  getUrlImagesMyAds(): void {
+    this.myAds.map(async (adMapForAddSrcImage: EditAdsInterface, index) => {
+      const imgForTestUrl = new Image();
+      imgForTestUrl.src = adMapForAddSrcImage.srcPublicImage?? '';
+
+      imgForTestUrl.onerror = ()=> {
+       console.log('erro in loading image by srcPublicImage');
+       adMapForAddSrcImage.srcPublicImage = null;
+       this.myAds[index] = adMapForAddSrcImage;
+
+       imgForTestUrl.src = adMapForAddSrcImage.srcImageExpire?? '';
+       imgForTestUrl.onerror = async () =>{
+        console.log('erro in loading image by srcImageExpire');
+        this.myAds[index] = adMapForAddSrcImage;
+
+        await this.getUrlImage(adMapForAddSrcImage);
+        adMapForAddSrcImage.srcPublicImage = null;
+        this.myAds[index] = adMapForAddSrcImage;
+       }
+      };    
+    })
+  }
+
+  async getUrlImage(ads: EditAdsInterface | AdsInterface) {
+    try {
+      let urlOutput = await getUrl({
+        path: ads.images[0],
+        options: {
+          validateObjectExistence: false,  // defaults to false
+          expiresIn: 5, // validity of the URL, in seconds. defaults to 900 (15 minutes) and maxes at 3600 (1 hour)
+        }
+      })
+      ads.srcImageExpire = urlOutput.url.toString();
+      ads.srcPublicImage = urlOutput.url.origin + urlOutput.url.pathname;
+    } catch (error) {
+      console.error('error fetching urlImage', error);
     }
   }
 
@@ -80,7 +108,7 @@ export class MyAdsComponent {
 
   updateAd(ad: EditAdsInterface) {
     try {
-      if(ad.id){
+      if (ad.id) {
         client.models.Ads.update(ad);
         this.listMyAds();
       }
@@ -89,64 +117,67 @@ export class MyAdsComponent {
     }
   }
 
-  openModalCreateAd(){
+  openModalCreateAd() {
     this.dialog.open(DialogCreateEditAdsComponent, {
-      maxWidth:'100%',
+      maxWidth: '100%',
     })
-    .afterClosed().subscribe({
-      next: async (res)=> {
-        if(res){
-          let path ='';
-          try {
-             await uploadData({
-              data: res.result,
-              path: `picture-submissions/${res.file.name}`
-            }).result.then( resultado => {
-              path = resultado.path;
-          });
-          } catch (e) {
-            console.log("error", e);
+      .afterClosed().subscribe({
+        next: async (res) => {
+          if (res) {
+            let path = '';
+            try {
+              await uploadData({
+                data: res.result,
+                path: `picture-submissions/${res.file.name}`
+              }).result.then(resultado => {
+                console.log('UPULOAD RES--->', resultado)
+                path = resultado.path;
+              });
+            } catch (e) {
+              console.log("error", e);
+            }
+            let ad: AdsInterface = {
+              title: res.data.title,
+              description: res.data.description,
+              images: [path]
+            }
+            await this.getUrlImage(ad)
+            this.createAd(ad)
           }
-          let ad:AdsInterface = {
-            title: res.data.title,
-            description: res.data.description,
-            images:[path]
-          }
-          this.createAd(ad)
         }
-      }
-    })
+      })
   }
 
-  openModalUpdateAd(ad: EditAdsInterface){
+  openModalUpdateAd(ad: EditAdsInterface) {
     this.dialog.open(DialogCreateEditAdsComponent, {
-      maxWidth:'100%',
+      maxWidth: '100%',
       data: ad
     })
-    .afterClosed().subscribe({
-      next: async (adRes)=> {
-        if(adRes){
-          let path ='';
-          try {
-             await uploadData({
-              data: adRes.result,
-              path: `picture-submissions/${adRes.file.name}`
-            }).result.then( resultado => {
-              path = resultado.path;
-          });
-          } catch (e) {
-            console.log("error", e);
+      .afterClosed().subscribe({
+        next: async (adRes) => {
+          if (adRes) {
+            let path = '';
+            try {
+              await uploadData({
+                data: adRes.result,
+                path: `picture-submissions/${adRes.file.name}`
+              }).result.then(resultado => {
+                path = resultado.path;
+              });
+            } catch (e) {
+              console.log("error", e);
+            }
+            let ad: EditAdsInterface = {
+              id: adRes.data.id,
+              title: adRes.data.title,
+              description: adRes.data.description,
+              images: [path]
+            }
+            await this.getUrlImage(ad)
+            this.updateAd(ad)
           }
-          let ad:EditAdsInterface = {
-            id: adRes.data.id,
-            title: adRes.data.title,
-            description: adRes.data.description,
-            images:[path]
-          }
-          this.updateAd(ad)
         }
-      }
-    })
+      })
   }
 
   deleteAds(id: string) {
