@@ -58,6 +58,8 @@ export class MyAdsComponent {
                 }
               })
                adMapForAddSrcImage.srcImage = urlOutput.url.toString();
+               adMapForAddSrcImage.srcPublicImage = urlOutput.url.origin + urlOutput.url.pathname;
+               console.log('urlOutput',urlOutput.url)
                this.myAds[index] = adMapForAddSrcImage;
           });
         },
@@ -98,7 +100,7 @@ export class MyAdsComponent {
           try {
              await uploadData({
               data: res.result,
-              path: `profile-pictures/${res.file.name}`
+              path: `picture-submissions/${res.file.name}`
             }).result.then( resultado => {
               path = resultado.path;
           });
@@ -128,7 +130,7 @@ export class MyAdsComponent {
           try {
              await uploadData({
               data: adRes.result,
-              path: `profile-pictures/${adRes.file.name}`
+              path: `picture-submissions/${adRes.file.name}`
             }).result.then( resultado => {
               path = resultado.path;
           });

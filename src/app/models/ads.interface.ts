@@ -9,6 +9,7 @@ export interface AdsInterface {
     comments?: CommentInterface[];
     ownerId?: UserInterface["id"];
     srcImage?: string | null;
+    srcPublicImage?: string | null;
 }
 
 export interface EditAdsInterface extends AdsInterface {

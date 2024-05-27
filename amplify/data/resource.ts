@@ -25,6 +25,7 @@ const schema = a.schema({
       description: a.string().required(),
       images: a.string().array(),
       srcImage: a.string().default('  '),
+      srcPublicImage: a.string()
     }).authorization((allow) => [allow.owner(), allow.authenticated().to(['read'])]),
 })
 
