@@ -13,8 +13,20 @@
     }
     img {
         max-width: 330px;
+        border-radius: 10px;
     }
     button {
         margin-left: auto !important;
+    }
+
+
+    @media (max-width: 760px) {
+        
+        .form-ads-image {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
     }
 }

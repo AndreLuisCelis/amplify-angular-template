@@ -10,6 +10,7 @@ export interface AdsInterface {
     ownerId?: UserInterface["id"];
     srcImageExpire?: string | null;
     srcPublicImage?: string | null;
+    createdAt?: string 
 }
 
 export interface EditAdsInterface extends AdsInterface {

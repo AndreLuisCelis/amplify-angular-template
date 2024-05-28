@@ -6,6 +6,7 @@ import outputs from '../../amplify_outputs.json';
 import { AmplifyAuthenticatorModule, AuthenticatorService } from '@aws-amplify/ui-angular';
 import { CommonModule } from '@angular/common';
 import { NavigationComponent } from './modules/shared/navigation/navigation.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 Amplify.configure(outputs);
 
@@ -19,7 +20,8 @@ Amplify.configure(outputs);
     TodosComponent, 
     AmplifyAuthenticatorModule,
     CommonModule,
-    NavigationComponent
+    NavigationComponent,
+    NgxSpinnerModule,
   ],
 })
 export class AppComponent {

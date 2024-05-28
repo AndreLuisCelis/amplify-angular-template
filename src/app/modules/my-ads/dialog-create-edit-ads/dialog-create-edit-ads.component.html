@@ -26,7 +26,7 @@
           <button type="button" mat-button (click)="fileInput.click()">Adicionar Imagem</button>
           <input hidden (change)="onFileSelectedAdd($event)" #fileInput type="file" accept=".jpg,.png" multiple="true">
       </p>
-      <p class="form-ads-image">
+      <div class="form-ads-image">
           <span class="file-name">
               {{selectedFileAdd?.name?.length>10 ?
               (selectedFileAdd?.name | slice: 0: 10) + '-'+
@@ -34,7 +34,7 @@
               : selectedFileAdd?.name }}
           </span>
           <img [src]="srcPreviewAdd">
-      </p>
+        </div>
       
         <button mat-raised-button (click)="registerAds()">Cadastrar</button>
  </form>

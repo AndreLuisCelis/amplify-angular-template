@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EditAdsInterface } from '../../models/ads.interface';
 import { AdsInterface } from "../../models/ads.interface";
@@ -11,12 +11,14 @@ import { MatCardModule } from '@angular/material/card';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { uploadData } from "aws-amplify/storage";
 import { getUrl } from 'aws-amplify/storage';
-import { aws_location } from 'aws-cdk-lib';
-import { single } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize, first, single, take } from 'rxjs';
+
 
 
 
 const client = generateClient<Schema>();
+
 
 @Component({
   selector: 'app-my-ads',
@@ -25,10 +27,13 @@ const client = generateClient<Schema>();
   templateUrl: './my-ads.component.html',
   styleUrl: './my-ads.component.scss'
 })
+
 export class MyAdsComponent {
 
   myAds: EditAdsInterface[] = [];
-  srcTesteImg = '';
+
+  spinner = inject(NgxSpinnerService)
+  
 
   constructor(
     public dialog: MatDialog,
@@ -40,30 +45,45 @@ export class MyAdsComponent {
   }
 
   listMyAds() {
+    
     this.getMyAds();
   }
   
   getMyAds(): void {
+    this.spinner.show();
     try {
-      client.models.Ads.observeQuery().subscribe({
+      client.models.Ads.observeQuery()
+      .subscribe({
         next: async ({ items, isSynced }) => {
           this.myAds = items.filter(adFilterUser => {
             return adFilterUser.owner === this.authenticator.user.userId
           });
+          this.spinner.hide();
+          this.orderByDesc(this.myAds);
           this.getUrlImagesMyAds();
         }
       });
     } catch (error) {
+      this.spinner.hide();
       console.error('error fetching myAds', error);
     }
   }
 
+  orderByDesc( myAds: EditAdsInterface[] ){
+    this.spinner.show();
+    myAds.sort((a:any, b:any) => {
+      return  a.createdAt + b.createdAt })
+      this.spinner.hide();
+  }
+
   getUrlImagesMyAds(): void {
+    this.spinner.show();
     this.myAds.map(async (adMapForAddSrcImage: EditAdsInterface, index) => {
       const imgForTestUrl = new Image();
       imgForTestUrl.src = adMapForAddSrcImage.srcPublicImage?? '';
 
       imgForTestUrl.onerror = ()=> {
+        this.spinner.hide();
        console.log('erro in loading image by srcPublicImage');
        adMapForAddSrcImage.srcPublicImage = null;
        this.myAds[index] = adMapForAddSrcImage;
@@ -72,16 +92,18 @@ export class MyAdsComponent {
        imgForTestUrl.onerror = async () =>{
         console.log('erro in loading image by srcImageExpire');
         this.myAds[index] = adMapForAddSrcImage;
-
+        this.spinner.hide();
         await this.getUrlImage(adMapForAddSrcImage);
         adMapForAddSrcImage.srcPublicImage = null;
         this.myAds[index] = adMapForAddSrcImage;
        }
       };    
     })
+    this.spinner.hide();
   }
 
   async getUrlImage(ads: EditAdsInterface | AdsInterface) {
+    this.spinner.show();
     try {
       let urlOutput = await getUrl({
         path: ads.images[0],
@@ -92,16 +114,21 @@ export class MyAdsComponent {
       })
       ads.srcImageExpire = urlOutput.url.toString();
       ads.srcPublicImage = urlOutput.url.origin + urlOutput.url.pathname;
+      this.spinner.hide();
     } catch (error) {
+      this.spinner.hide();
       console.error('error fetching urlImage', error);
     }
   }
 
   createAd(ad: AdsInterface) {
+    this.spinner.show();
     try {
       client.models.Ads.create(ad);
       this.listMyAds();
+      this.spinner.hide();
     } catch (error) {
+      
       console.error('error creating todos', error);
     }
   }
@@ -126,14 +153,17 @@ export class MyAdsComponent {
           if (res) {
             let path = '';
             try {
+              this.spinner.show();
               await uploadData({
                 data: res.result,
                 path: `picture-submissions/${res.file.name}`
               }).result.then(resultado => {
                 console.log('UPULOAD RES--->', resultado)
                 path = resultado.path;
+                this.spinner.hide();
               });
             } catch (e) {
+              this.spinner.hide();
               console.log("error", e);
             }
             let ad: AdsInterface = {
@@ -158,13 +188,16 @@ export class MyAdsComponent {
           if (adRes) {
             let path = '';
             try {
+              this.spinner.show();
               await uploadData({
                 data: adRes.result,
                 path: `picture-submissions/${adRes.file.name}`
               }).result.then(resultado => {
                 path = resultado.path;
+                this.spinner.hide();
               });
             } catch (e) {
+              this.spinner.hide();
               console.log("error", e);
             }
             let ad: EditAdsInterface = {
