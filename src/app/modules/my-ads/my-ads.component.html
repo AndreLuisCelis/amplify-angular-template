@@ -11,11 +11,11 @@
 
         @if(ad.srcPublicImage){
           <img src="{{ad.srcPublicImage}}" alt="imagem do anuncio">
+        } @else {
+          @if(ad.srcImageExpire) {
+            <img src="{{ad.srcImageExpire}}" alt="imagem do anuncio">
+          }
         }
-        @if(ad.srcImageExpire) {
-          <img src="{{ad.srcImageExpire}}" alt="imagem do anuncio">
-        }
-        
         <mat-card-content>
           <p>
            {{ad.description}}
