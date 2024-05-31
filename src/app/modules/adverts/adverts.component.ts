@@ -7,6 +7,8 @@ import { CommonModule } from '@angular/common';
 import { AdsInterface, EditAdsInterface } from "../../models/ads.interface";
 import { getUrl } from 'aws-amplify/storage';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AdsService } from '../ads.service';
+import { finalize } from 'rxjs';
 
 const client = generateClient<Schema>();
 
@@ -21,7 +23,10 @@ export class AdvertsComponent {
 
   ads: AdsInterface[] = [];
 
-  constructor(private spinner: NgxSpinnerService) { }
+  constructor(
+    private spinner: NgxSpinnerService,
+    private adsService: AdsService
+  ) { }
 
   ngOnInit() {
     this.listAds()
@@ -29,57 +34,13 @@ export class AdvertsComponent {
 
   listAds() {
     this.spinner.show();
-      client.models.Ads.observeQuery().subscribe({
-        next: async ({ items, isSynced }) => {
-          this.ads = items;
-          this.spinner.hide();
-          this.getUrlImagesAds();    
-        },
-      });
-  }
-
-  getUrlImagesAds(): void {
-    this.spinner.show();
-    this.ads.map(async (adMapForAddSrcImage: AdsInterface, index) => {
-      const imgForTestUrl = new Image();
-      imgForTestUrl.src = adMapForAddSrcImage.srcPublicImage?? '';
-
-      imgForTestUrl.onerror = ()=> {
-       console.log('erro in loading image by srcPublicImage');
-       adMapForAddSrcImage.srcPublicImage = null;
-       this.ads[index] = adMapForAddSrcImage;
-       this.spinner.hide();
-
-       imgForTestUrl.src = adMapForAddSrcImage.srcImageExpire?? '';
-       imgForTestUrl.onerror = async () =>{
-        console.log('erro in loading image by srcImageExpire');
-        this.ads[index] = adMapForAddSrcImage;
+    this.adsService.getListAds()
+    .subscribe({
+      next: (ads: EditAdsInterface[]) => {
+        this.ads = ads;
         this.spinner.hide();
-        await this.getUrlImage(adMapForAddSrcImage);
-        adMapForAddSrcImage.srcPublicImage = null;
-        this.ads[index] = adMapForAddSrcImage;
-       }
-      };    
-    })
-    this.spinner.hide();
-  }
-
-  async getUrlImage(ads: AdsInterface) {
-    try {
-      this.spinner.show();
-      let urlOutput = await getUrl({
-        path: ads.images[0],
-        options: {
-          validateObjectExistence: false,  // defaults to false
-          expiresIn: 5, // validity of the URL, in seconds. defaults to 900 (15 minutes) and maxes at 3600 (1 hour)
-        }
-      })
-      ads.srcImageExpire = urlOutput.url.toString();
-      ads.srcPublicImage = urlOutput.url.origin + urlOutput.url.pathname;
-      this.spinner.hide();
-    } catch (error) {
-      this.spinner.hide();
-      console.error('error fetching urlImage', error);
-    }
+      },
+      error:()=> this.spinner.hide()
+    });
   }
 }

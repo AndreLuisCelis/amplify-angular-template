@@ -1,29 +1,40 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { RouterOutlet } from '@angular/router';
+import { AmplifyAuthenticatorModule } from '@aws-amplify/ui-angular';
+import { MatDividerModule } from '@angular/material/divider';
 
 describe('AppComponent', () => {
+
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+
+      imports: [
+        AppComponent, 
+        RouterOutlet,
+        AmplifyAuthenticatorModule,
+      ],
+      providers: [ ]
     }).compileComponents();
+     fixture = TestBed.createComponent(AppComponent);
+     component = fixture.componentInstance;
+     fixture.detectChanges();
   });
 
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
   it(`should have the 'amplify-angular-template' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('amplify-angular-template');
+    expect(component.title).toEqual('amplify-angular-template');
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+  it('should amplify-authenticator', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, amplify-angular-template');
+    let email = document.getElementById("amplify-authenticator");
+    expect(compiled.querySelector('amplify-authenticator')).toBeTruthy();
   });
 });

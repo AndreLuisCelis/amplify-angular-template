@@ -41,7 +41,7 @@ export class NavigationComponent implements OnInit {
 
 
   private breakpointObserver = inject(BreakpointObserver);
-  private activeRouter = inject(ActivatedRoute);
+  // private activeRouter = inject(ActivatedRoute);
   private router = inject(Router);
 
 

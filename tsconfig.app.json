@@ -3,13 +3,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "files": [
     "src/main.ts",
     "src/aws-polyfills.ts"
   ],
   "include": [
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "src/aws-polyfills.ts"
   ]
 }
