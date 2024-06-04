@@ -62,6 +62,7 @@ export class NavigationComponent implements OnInit {
   @Input() user: any;
   @Output() signOutEvent = new EventEmitter();
   pageTitle = '';
+  logout = false;
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -75,13 +76,14 @@ export class NavigationComponent implements OnInit {
   }
 
   handlePageTitle(): void {
-    this.pageTitle = this.router.routerState.root.firstChild?.snapshot.title ?? '';
+    this.pageTitle = this.router.routerState.root.firstChild?.snapshot.title ?? this.pageTitle;
     this.router.events.subscribe(() => {
-      this.pageTitle = this.router.routerState.root.firstChild?.snapshot.title ?? '';
+      this.pageTitle = this.router.routerState.root.firstChild?.snapshot.title ?? this.pageTitle;
     })
   }
 
   signOut(): void {
-    this.signOutEvent.emit(true);
+    this.logout = true;
+    this.signOutEvent.emit(this.logout);
   }
 }

@@ -41,7 +41,9 @@ export class AdsService {
           let itemsList: EditAdsInterface[] = items.filter(ad => {
             return ad.owner === this.authenticator.user.userId
           })
+          this.orderDesc(itemsList);
           this.getUrlImagesAds(itemsList);
+          
           // this.orderByDesc(itemsList);
           return itemsList
         })
@@ -59,6 +61,27 @@ export class AdsService {
       const dateB = new Date(b.createdAt).valueOf();
       return dateA > dateB ? 1 : dateB > dateA ? -1 : 0;
     })
+  }
+
+  private orderDesc(myAds: EditAdsInterface[]){
+    for (let i = 0; i < myAds.length; i++) {
+      for (let j = 0; j < myAds.length; j++) {
+        if(j >= myAds.length){
+          return;
+        }
+        let indicePrimeiroItem = j;
+        let indiceSegundoItem = j+1;
+        const dateA = new Date(myAds[indicePrimeiroItem]?.createdAt as string).valueOf();
+        const dateB = new Date(myAds[indiceSegundoItem]?.createdAt as string).valueOf();
+
+        if(dateA < dateB){
+          let cretedAtMenor = myAds[indicePrimeiroItem];
+          myAds[indicePrimeiroItem] = myAds[indiceSegundoItem];
+          myAds[indiceSegundoItem] = cretedAtMenor
+        }
+      }
+    }
+    return myAds;
   }
 
   private getUrlImagesAds(ads: EditAdsInterface[]): void {
