@@ -139,6 +139,17 @@ export class AdsService {
     return creatAdObs;
   }
 
+  deleteAds(id: string): Observable<EditAdsInterface> {
+    const creatAdObs = from(this.removeAds(id));
+    return creatAdObs ;
+  }
+
+  async removeAds(id: string) : Promise<EditAdsInterface>{
+    let response = await client.models.Ads.delete({ id });
+    let removedAds = response.data as EditAdsInterface
+    return removedAds;
+  }
+
   async newAds(payload: PayloadCreateAds): Promise<AdsInterface> {
     let path = '';
     try {

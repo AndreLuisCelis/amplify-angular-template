@@ -1,19 +1,14 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EditAdsInterface } from '../../models/ads.interface';
-import { AdsInterface } from "../../models/ads.interface";
 import { DialogCreateEditAdsComponent } from './dialog-create-edit-ads/dialog-create-edit-ads.component';
-import { generateClient } from 'aws-amplify/api';
-import { Schema } from '../../../../amplify/data/resource';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { uploadData } from "aws-amplify/storage";
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AdsService } from '../ads.service';
 import { PayloadCreateAds } from '../../models/payload-creatads.interface';
-
-const client = generateClient<Schema>();
+import { finalize } from 'rxjs';
 
 
 @Component({
@@ -39,79 +34,53 @@ export class MyAdsComponent {
   ngOnInit() {
     this.getMyAds();
   }
-
+  
   getMyAds(): void {
     this.spinner.show();
-    this.adsService.getMyAds().subscribe({
-      next: (items) => {
-        this.myAds = items;
-        this.spinner.hide();
-      },
-      error: () => this.spinner.hide()
-    });
+    this.adsService.getMyAds().pipe(finalize(() => this.spinner.hide()))
+      .subscribe({ next: (items) => { this.myAds = items } });
   }
-
- 
 
   createAds(payload: PayloadCreateAds) {
     this.spinner.show();
-    this.adsService.createAds(payload).subscribe({
-      next: () => {
-        this.spinner.hide();
-        this.getMyAds();
-      }, error: () => this.spinner.hide()
-    })
+    this.adsService.createAds(payload).pipe(finalize(() => this.spinner.hide()))
+      .subscribe({ next: () => this.getMyAds() })
   }
 
   updateAds(payload: PayloadCreateAds) {
     this.spinner.show();
-    this.adsService.updateAds(payload).subscribe({
-      next: () => {
-        this.spinner.hide();
-        this.getMyAds();
-      }, error: () => this.spinner.hide()
-    })
+    this.adsService.updateAds(payload).pipe(finalize(() => this.spinner.hide()))
+      .subscribe({ next: () => this.getMyAds() })
   }
 
-  updateAd(ad: EditAdsInterface) {
-    try {
-      if (ad.id) {
-        client.models.Ads.update(ad);
-        this.getMyAds();
-      }
-    } catch (error) {
-      console.error('error creating todos', error);
-    }
+  deleteAds(id: string) {
+    this.spinner.show();
+    this.adsService.deleteAds(id).pipe(finalize(() => this.spinner.hide()))
+      .subscribe({ next: res => { this.myAds = this.myAds.filter(ads => ads.id != res.id) } });
   }
 
   openModalCreateAd() {
     this.dialog.open(DialogCreateEditAdsComponent, {
       maxWidth: '100%',
-    })
-      .afterClosed().subscribe({
-        next: async (payload: PayloadCreateAds) => {
-          if (payload) {
-            this.createAds(payload);
-          }
+    }).afterClosed().subscribe({
+      next: async (payload: PayloadCreateAds) => {
+        if (payload) {
+          this.createAds(payload);
         }
-      })
+      }
+    })
   }
 
   openModalUpdateAd(ad: EditAdsInterface) {
     this.dialog.open(DialogCreateEditAdsComponent, {
       maxWidth: '100%',
       data: ad
-    })
-      .afterClosed().subscribe({
-        next: async (payload: PayloadCreateAds) => {
-          if (payload) {
-            this.updateAds(payload)
-          }
+    }).afterClosed().subscribe({
+      next: async (payload: PayloadCreateAds) => {
+        if (payload) {
+          this.updateAds(payload)
         }
-      })
-  }
-
-  deleteAds(id: string) {
-    client.models.Ads.delete({ id })
+      }
+    })
   }
 }
