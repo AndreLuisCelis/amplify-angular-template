@@ -7,7 +7,8 @@ export interface AdsInterface {
     description: string;
     images?: string[] | any;
     comments?: CommentInterface[];
-    owner?: UserInterface["id"];
+    userId?: UserInterface["id"];
+    user?: UserInterface;
     srcImageExpire?: string | null;
     srcPublicImage?: string | null;
     createdAt?: string 

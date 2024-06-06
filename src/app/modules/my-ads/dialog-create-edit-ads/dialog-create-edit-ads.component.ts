@@ -7,13 +7,9 @@ import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef, MatDialogTitle } from 
 import { MatIconModule } from '@angular/material/icon';
 import { EditAdsInterface } from "../../../models/ads.interface";
 import { CommonModule } from '@angular/common';
+import { PayloadCreateAds } from '../../../models/payload-creatads.interface';
 
-export interface PayloadCreateAds {
-  fileName: string;
-  data: EditAdsInterface;
-  imgBase64: string | ArrayBuffer;
-  result: string | ArrayBuffer;
-}
+
 
 @Component({
   selector: 'app-dialog-create-edit-ads',

@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { User } from 'aws-cdk-lib/aws-iam';
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -15,8 +16,9 @@ const schema = a.schema({
   
   User: a
     .model({
+      id: a.string(),
       name: a.string(),
-      email: a.string()
+      email: a.string(),
     }).authorization((allow) => [allow.authenticated().to(['read']),allow.owner()]),
   
     Ads: a
@@ -25,8 +27,19 @@ const schema = a.schema({
       description: a.string().required(),
       images: a.string().array(),
       srcImageExpire: a.string(),
-      srcPublicImage: a.string()
-    }).authorization((allow) => [allow.owner(), allow.authenticated().to(['read'])]),
+      srcPublicImage: a.string(),
+      createdAt:a.string(),
+      userId: a.id(),
+      user: a.customType({
+        id: a.string(),
+        email: a.string(),
+        name: a.string(),
+      })
+    }).secondaryIndexes((index) => {
+      index
+      return [index('userId').sortKeys(['createdAt']).queryField('listMyAds')]
+    })
+    .authorization((allow) => [allow.owner(), allow.authenticated().to(['read'])]),
 })
 
 export type Schema = ClientSchema<typeof schema>;

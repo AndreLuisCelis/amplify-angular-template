@@ -6,7 +6,8 @@
     <mat-card class="ads-card" *ngFor="let ad of myAds" >
         <mat-card-header>
           <div mat-card-avatar class="ads-header-image"></div>
-          <mat-card-title>{{ad.title}}</mat-card-title>
+          <mat-card-subtitle>{{ad.user?.email}}</mat-card-subtitle>
+          <mat-card-title>{{ad.title}}</mat-card-title>  
         </mat-card-header>
 
         @if(ad.srcPublicImage){

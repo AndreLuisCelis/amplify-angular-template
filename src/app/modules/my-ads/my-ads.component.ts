@@ -2,7 +2,7 @@ import { Component, Inject, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EditAdsInterface } from '../../models/ads.interface';
 import { AdsInterface } from "../../models/ads.interface";
-import { DialogCreateEditAdsComponent, PayloadCreateAds } from './dialog-create-edit-ads/dialog-create-edit-ads.component';
+import { DialogCreateEditAdsComponent } from './dialog-create-edit-ads/dialog-create-edit-ads.component';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../../../amplify/data/resource';
 import { CommonModule } from '@angular/common';
@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { uploadData } from "aws-amplify/storage";
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AdsService } from '../ads.service';
+import { PayloadCreateAds } from '../../models/payload-creatads.interface';
 
 const client = generateClient<Schema>();
 
