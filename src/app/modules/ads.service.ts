@@ -121,8 +121,8 @@ export class AdsService {
           expiresIn: 5, // validity of the URL, in seconds. defaults to 900 (15 minutes) and maxes at 3600 (1 hour)
         }
       })
-      ads.srcImageExpire = urlOutput.url.toString();
-      ads.srcPublicImage = urlOutput.url.origin + urlOutput.url.pathname;
+      ads.srcImageExpire = urlOutput?.url.toString();
+      ads.srcPublicImage = urlOutput?.url.origin + urlOutput.url.pathname;
 
     } catch (error) {
       console.error('error fetching urlImage', error);
@@ -182,12 +182,14 @@ export class AdsService {
   async editAds(payload: PayloadCreateAds): Promise<EditAdsInterface> {
     let path = '';
     try {
-      await uploadData({
-        data: payload.result,
-        path: `picture-submissions/${payload.fileName}`
-      }).result.then(res => {
-        path = res.path;
-      });
+      if(payload.result) { // Verify if img was modifycated 
+        await uploadData({
+          data: payload.result,
+          path: `picture-submissions/${payload.fileName}`
+        }).result.then(res => {
+          path = res.path;
+        });
+      } 
     } catch (e) {
       console.log("error", e);
     }
@@ -195,9 +197,13 @@ export class AdsService {
       id: payload.data.id,
       title: payload.data.title,
       description: payload.data.description,
-      images: [path]
     }
+
+    // VERIFY CHANGE OF IMG FOR GET NEW URL
+    if(payload.result) {
+      adForEdit.images = [path];
       await this.getUrlImage(adForEdit);
+    }
       let response = await client.models.Ads.update(adForEdit);
       let editedAds: EditAdsInterface = response.data as EditAdsInterface;
       return editedAds;

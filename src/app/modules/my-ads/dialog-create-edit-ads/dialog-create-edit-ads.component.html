@@ -26,16 +26,20 @@
           <button type="button" mat-button (click)="fileInput.click()">Adicionar Imagem</button>
           <input hidden (change)="onFileSelectedAdd($event)" #fileInput type="file" accept=".jpg,.png" multiple="true">
       </p>
-      <div class="form-ads-image">
-          <span class="file-name">
-              {{selectedFileAdd?.name?.length>10 ?
-              (selectedFileAdd?.name | slice: 0: 10) + '-'+
-              (selectedFileAdd?.name | slice: -4)
-              : selectedFileAdd?.name }}
-          </span>
-          <img [src]="srcPreviewAdd">
-        </div>
       
+          @if (formAds.controls['srcPreviewAdd'].hasError('required') && formAds.controls['srcPreviewAdd'].touched) {
+              <mat-error>Necessário adicionar uma  <strong>Imagem</strong></mat-error>
+          }
+      
+      <div class="form-ads-image">
+        <span class="file-name">
+            {{selectedFileAdd?.name?.length>10 ?
+            (selectedFileAdd?.name | slice: 0: 10) + '-'+
+            (selectedFileAdd?.name | slice: -4)
+            : selectedFileAdd?.name }}
+        </span>
+        <img [src]="srcPreviewAdd">
+      </div>
         <button mat-raised-button (click)="registerAds()">Cadastrar</button>
  </form>
 </mat-dialog-content>

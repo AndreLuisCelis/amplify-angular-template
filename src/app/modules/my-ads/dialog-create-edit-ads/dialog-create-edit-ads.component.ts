@@ -28,16 +28,16 @@ import { PayloadCreateAds } from '../../../models/payload-creatads.interface';
   styleUrl: './dialog-create-edit-ads.component.scss'
 })
 export class DialogCreateEditAdsComponent {
-
+  
+  selectedFileAdd: any = null;
+  srcPreviewAdd: string | ArrayBuffer = this.data?.srcImageExpire?this.data.srcImageExpire:'';
+  arrayBufferForData: string | ArrayBuffer = '';
 
   formAds = this.fb.group({
     title: [this.data ? this.data.title : '', Validators.required],
     description: [this.data ? this.data.description : '', Validators.required],
+    srcPreviewAdd: [this.srcPreviewAdd, Validators.required],
   })
-
-  selectedFileAdd: any = null;
-  srcPreviewAdd: string | ArrayBuffer = '';
-  arrayBufferForData: string | ArrayBuffer = '';
 
   constructor(
     public dialogRef: MatDialogRef<DialogCreateEditAdsComponent>,
@@ -45,6 +45,7 @@ export class DialogCreateEditAdsComponent {
     private fb: FormBuilder) { }
 
   registerAds() {
+    this.formAds.controls['srcPreviewAdd'].markAsTouched();
     if (this.formAds.valid) {
       let payload: PayloadCreateAds = {
         fileName: this.selectedFileAdd?.name,
@@ -76,6 +77,7 @@ export class DialogCreateEditAdsComponent {
     const reader = new FileReader();
     reader.onloadend = () => {
       this.srcPreviewAdd = reader.result ?? ''
+      this.formAds.controls['srcPreviewAdd'].setValue(this.srcPreviewAdd)
     }
     reader.readAsDataURL(selectedFile);
   }
