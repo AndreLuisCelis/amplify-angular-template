@@ -1,8 +1,12 @@
 import { TestBed, fakeAsync } from '@angular/core/testing';
 
-import { AdsService } from './ads.service';
+import { AdsService, client } from './ads.service';
 import { of } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Amplify } from 'aws-amplify';
+import outputs from '../../../amplify_outputs.json';
+import { AuthenticatorService } from '@aws-amplify/ui-angular';
+import { getUrl, uploadData } from 'aws-amplify/storage';
 
 const mockAds = [
   {
@@ -47,7 +51,10 @@ const payloadMock =  {
 
 describe('AdsService', () => {
   let service: AdsService;
-  let httpTestingController: HttpTestingController
+  let httpTestingController: HttpTestingController;
+  client 
+  Amplify.configure(outputs);
+  let authenticator: AuthenticatorService;
   
 
   beforeEach(() => {
@@ -57,7 +64,7 @@ describe('AdsService', () => {
     service = TestBed.inject(AdsService);
     httpTestingController = TestBed.inject(HttpTestingController)
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-
+    authenticator = TestBed.inject(AuthenticatorService);
   });
 
   it('should be created', () => {
@@ -129,5 +136,16 @@ describe('AdsService', () => {
       expect(res).toEqual(mockAds[1])
       done()
     })
+  });
+
+  it('should to calls getMyAds request',done => {
+    let spyCallClientListMyAds =  spyOn(client.models.Ads, 'listMyAds').and.returnValue(Promise.resolve(mockAds))
+    let spyCallClientGetUrl = spyOn(service, 'storageFunctionGetUrl').and.returnValue(Promise.resolve({url:'' as any, expiresAt: '' as any}))
+    let spyCallClientUploadData = spyOn(service, 'storageFunctionUploadData').and.returnValue({path:''} as any)
+  
+    service.getMyAds().subscribe(res => {console.log('res---->', res); done()});
+     expect(spyCallClientListMyAds).toHaveBeenCalledTimes(1)
+     expect(spyCallClientGetUrl).toHaveBeenCalledTimes(0)
+     expect(spyCallClientUploadData).toHaveBeenCalledTimes(0)
   });
 });

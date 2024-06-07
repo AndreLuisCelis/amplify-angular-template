@@ -8,14 +8,19 @@ import { getUrl, uploadData } from 'aws-amplify/storage';
 import { PayloadCreateAds } from '../models/payload-creatads.interface';
 
 
-const client = generateClient<Schema>();
+
+export const client = generateClient<Schema>();
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdsService {
 
-   
+  storageFunctionGetUrl = getUrl;
+  storageFunctionUploadData = uploadData;
+  apiListAds = client.models.Ads.listMyAds({
+    userId: this.authenticator?.user?.userId?this.authenticator?.user?.userId: ''
+  })
 
   constructor(
     private authenticator: AuthenticatorService
@@ -35,33 +40,17 @@ export class AdsService {
       return of(erro)
     }
   }
-
+  
   getMyAds(): Observable<EditAdsInterface[]> {
     try {
       /// Teste lisMyAds
-     return from(client.models.Ads.listMyAds({
-        userId: this.authenticator.user.userId,
-      })).pipe(
-        map((items) => {
-          this.orderDesc(items.data as EditAdsInterface[]);
-          this.getUrlImagesAds(items.data as EditAdsInterface[]);
-          return items.data as EditAdsInterface[];
+      return this.lisMyAds().pipe(
+        map((items: EditAdsInterface[]) => {
+          this.orderDesc(items);
+          this.getUrlImagesAds(items);
+          return items;
         })
       )
-    
-      // return from(client.models.Ads.observeQuery({
-      //   filter:{
-      //     owner: {
-      //       contains: this.authenticator.user.userId
-      //     }
-      //   }
-      // })).pipe(
-      //   map(({ items, isSynced }) => {
-      //     this.orderDesc(items as EditAdsInterface[]);
-      //     this.getUrlImagesAds(items as EditAdsInterface[]);
-      //     return items as EditAdsInterface[];
-      //   })
-      // )
     } catch (error) {
       console.error('error fetching myAds', error);
       let erro: any = new Error('error fetching myAds')
@@ -69,29 +58,35 @@ export class AdsService {
     }
   }
 
+  lisMyAds(): Observable<EditAdsInterface[]>{
+    return from(client.models.Ads.listMyAds({
+      userId: this.authenticator?.user?.userId?this.authenticator?.user?.userId: ''
+    }).then(items=> items.data as EditAdsInterface[] )) 
+  }
+
   orderDesc(myAds: EditAdsInterface[]) {
-    for (let i = 0; i < myAds.length; i++) {
-      for (let j = 0; j < myAds.length; j++) {
-        if (j >= myAds.length) {
+    for (let i = 0; i < myAds?.length; i++) {
+      for (let j = 0; j < myAds?.length; j++) {
+        if (j >= myAds?.length) {
           return;
         }
-        let indicePrimeiroItem = j;
-        let indiceSegundoItem = j + 1;
-        const dateA = new Date(myAds[indicePrimeiroItem]?.createdAt as string).valueOf();
-        const dateB = new Date(myAds[indiceSegundoItem]?.createdAt as string).valueOf();
+        let indexFirstItem = j;
+        let indexSecondItem = j + 1;
+        const dateA = new Date(myAds[indexFirstItem]?.createdAt as string).valueOf();
+        const dateB = new Date(myAds[indexSecondItem]?.createdAt as string).valueOf();
 
         if (dateA < dateB) {
-          let cretedAtMenor = myAds[indicePrimeiroItem];
-          myAds[indicePrimeiroItem] = myAds[indiceSegundoItem];
-          myAds[indiceSegundoItem] = cretedAtMenor
+          let cretedAtMenor = myAds[indexFirstItem];
+          myAds[indexFirstItem] = myAds[indexSecondItem];
+          myAds[indexSecondItem] = cretedAtMenor
         }
       }
     }
     return myAds;
   }
 
-  getUrlImagesAds(ads: EditAdsInterface[]): void {
-    ads.map(async (ad: EditAdsInterface, index) => {
+  getUrlImagesAds(ads: EditAdsInterface[]): EditAdsInterface[] {
+    ads?.map(async (ad: EditAdsInterface, index) => {
       const imgForTestUrl = new Image();
       imgForTestUrl.src = ad.srcPublicImage ?? '';
 
@@ -110,11 +105,12 @@ export class AdsService {
         }
       };
     })
+    return ads;
   }
 
   async getUrlImage(ads: EditAdsInterface | AdsInterface) {
     try {
-      let urlOutput = await getUrl({
+      let urlOutput = await this.storageFunctionGetUrl({
         path: ads.images[0],
         options: {
           validateObjectExistence: false,  // defaults to false
@@ -153,7 +149,7 @@ export class AdsService {
   async newAds(payload: PayloadCreateAds): Promise<AdsInterface> {
     let path = '';
     try {
-      await uploadData({
+      await this.storageFunctionUploadData({
         data: payload.result,
         path: `picture-submissions/${payload.fileName}`
       }).result.then(res => {
@@ -182,8 +178,8 @@ export class AdsService {
   async editAds(payload: PayloadCreateAds): Promise<EditAdsInterface> {
     let path = '';
     try {
-      if(payload.result) { // Verify if img was modifycated 
-        await uploadData({
+      if(payload.result) { // Verify if img was modified 
+        await this.storageFunctionUploadData({
           data: payload.result,
           path: `picture-submissions/${payload.fileName}`
         }).result.then(res => {
@@ -198,7 +194,6 @@ export class AdsService {
       title: payload.data.title,
       description: payload.data.description,
     }
-
     // VERIFY CHANGE OF IMG FOR GET NEW URL
     if(payload.result) {
       adForEdit.images = [path];
