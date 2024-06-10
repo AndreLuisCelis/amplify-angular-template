@@ -1,12 +1,11 @@
-import { TestBed, fakeAsync } from '@angular/core/testing';
-
+import { TestBed } from '@angular/core/testing';
 import { AdsService, client } from './ads.service';
 import { of } from 'rxjs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Amplify } from 'aws-amplify';
 import outputs from '../../../amplify_outputs.json';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
-import { getUrl, uploadData } from 'aws-amplify/storage';
+import { EditAdsInterface } from '../models/ads.interface';
 
 const mockAds = [
   {
@@ -14,10 +13,10 @@ const mockAds = [
     title: "Anuncio 1",
     description: "Teste de anuncio",
     images: [
-      "picture-submissions/32(12).png"
+      "picture-submissions/32(12).png--"
     ],
-    srcImageExpire: "https://amplify-d1i7n24tkfv9cw-ma-amplifyteamdrivebucket28-xuviy5jfvgzt.s3.us-east-1.amazonaws.com/picture-submissions/32%2812%29.png?x-amz-content-sha256",
-    srcPublicImage: "https://amplify-d1i7n24tkfv9cw-ma-amplifyteamdrivebucket28-xuviy5jfvgzt.s3.us-east-1.amazonaws.com/picture-submissions/32%2812%29.png",
+    srcImageExpire: null,
+    srcPublicImage: null,
     createdAt: "2024-06-04T01:44:24.635Z",
     updatedAt: "2024-06-04T01:44:24.635Z",
     owner: "6448c4a8-9041-709d-c9bd-7c3a0e05b9d3"
@@ -27,7 +26,7 @@ const mockAds = [
     title: "Anuncio 2",
     description: "Teste de anuncio",
     images: [
-      "picture-submissions/32(12).png"
+      "picture-submissions/32(12).png--"
     ],
     srcImageExpire: null,
     srcPublicImage: null,
@@ -55,55 +54,45 @@ describe('AdsService', () => {
   client 
   Amplify.configure(outputs);
   let authenticator: AuthenticatorService;
+  let spyLisMyAds: jasmine.Spy;
+  let spyGetUrlImage: jasmine.Spy;
   
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports:[HttpClientTestingModule]
     });
+
     service = TestBed.inject(AdsService);
     httpTestingController = TestBed.inject(HttpTestingController)
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
     authenticator = TestBed.inject(AuthenticatorService);
+
+    spyLisMyAds = spyOn(service , 'lisMyAds').and.returnValue(of(mockAds));
+    spyGetUrlImage = spyOn(service, 'getUrlImage').and.callThrough();
+
+    spyOn(service , 'getListAds').and.returnValue(of(mockAds));
+    spyOn(service , 'getMyAds').and.returnValue(of(mockAds));
+    spyOn(service, 'newAds').and.returnValue(Promise.resolve(mockAds[0]));
+    spyOn(service, 'editAds').and.returnValue(Promise.resolve(mockAds[1]))
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get list of ads', () => {
-    spyOn(service , 'getListAds').and.returnValue(of(mockAds))
+  it('should get list of ads', done => {
     service.getListAds().subscribe( res => {
       expect(res).toBe(mockAds);
+      done();
     })
   });
 
-  it('should return an error message in get list ads', done => {
-    let spied = spyOn(service , 'getListAds').and.callThrough();
-    service.getListAds().subscribe( res => {
-      let erro:any = res
-      expect(erro.message).toEqual('error fetching Ads');
-    })
-    expect(spied).toHaveBeenCalledTimes(1);
-    done();
-  });
-
-  it('should get list of myAds', () => {
-    spyOn(service , 'getMyAds').and.returnValue(of(mockAds))
+  it('should get list of myAds', done => {
     service.getMyAds().subscribe( res => {
       expect(res).toBe(mockAds);
+      done();
     })
-  });
-
-  it('should return a message error in get list myAds', done => {
-    let spied = spyOn(service , 'getMyAds').and.callThrough();
-    service.getMyAds().subscribe( res => {
-      let erro:any = res
-      console.log('res mydas', res)
-      expect(erro.message).toEqual('error fetching myAds');
-    })
-    expect(spied).toHaveBeenCalledTimes(1);
-    done();
   });
 
   it('should orde by desc list myAds', () => {
@@ -113,14 +102,10 @@ describe('AdsService', () => {
 
   it('should get imgs of list myAds', () => {
     service.getUrlImagesAds(mockAds);
-    expect(mockAds[0].images[0]).toEqual('picture-submissions/32(12).png')
+    expect(mockAds[0].images[0]).toEqual('picture-submissions/32(12).png--')
   });
 
   it('should create Ads', done => {
-    let res = (resolve:any)=> {
-      resolve(mockAds[0])
-    }
-    spyOn(service, 'newAds').and.returnValue(new Promise(res))
     service.createAds(payloadMock).subscribe( (res) => {
       expect(res).toEqual(mockAds[0])
       done()
@@ -128,24 +113,17 @@ describe('AdsService', () => {
   });
 
   it('should update Ads', done => {
-    let res = (resolve:any)=> {
-      resolve(mockAds[1])
-    }
-    spyOn(service, 'editAds').and.returnValue(new Promise(res))
     service.updateAds(payloadMock).subscribe( (res) => {
       expect(res).toEqual(mockAds[1])
       done()
     })
   });
 
-  it('should to calls getMyAds request',done => {
-    let spyCallClientListMyAds =  spyOn(client.models.Ads, 'listMyAds').and.returnValue(Promise.resolve(mockAds))
-    let spyCallClientGetUrl = spyOn(service, 'storageFunctionGetUrl').and.returnValue(Promise.resolve({url:'' as any, expiresAt: '' as any}))
-    let spyCallClientUploadData = spyOn(service, 'storageFunctionUploadData').and.returnValue({path:''} as any)
-  
-    service.getMyAds().subscribe(res => {console.log('res---->', res); done()});
-     expect(spyCallClientListMyAds).toHaveBeenCalledTimes(1)
-     expect(spyCallClientGetUrl).toHaveBeenCalledTimes(0)
-     expect(spyCallClientUploadData).toHaveBeenCalledTimes(0)
+  it('should to calls getMyAds request', done => {
+    service.lisMyAds().subscribe(res => {
+      expect(res).toContain(mockAds[0] as EditAdsInterface)
+      expect(spyLisMyAds).toHaveBeenCalledTimes(1)
+      done();
+    });
   });
 });

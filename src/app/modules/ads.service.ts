@@ -47,7 +47,8 @@ export class AdsService {
       return this.lisMyAds().pipe(
         map((items: EditAdsInterface[]) => {
           this.orderDesc(items);
-          this.getUrlImagesAds(items);
+          console.log('--->', items)
+          items = this.getUrlImagesAds(items);
           return items;
         })
       )
@@ -61,7 +62,9 @@ export class AdsService {
   lisMyAds(): Observable<EditAdsInterface[]>{
     return from(client.models.Ads.listMyAds({
       userId: this.authenticator?.user?.userId?this.authenticator?.user?.userId: ''
-    }).then(items=> items.data as EditAdsInterface[] )) 
+    }).then(items=>{
+      return items.data as EditAdsInterface[]
+    }  )) 
   }
 
   orderDesc(myAds: EditAdsInterface[]) {
@@ -123,6 +126,7 @@ export class AdsService {
     } catch (error) {
       console.error('error fetching urlImage', error);
     }
+    return ads
   }
 
   createAds(payload: PayloadCreateAds): Observable<AdsInterface> {

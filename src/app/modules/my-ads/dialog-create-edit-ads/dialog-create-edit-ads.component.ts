@@ -64,8 +64,8 @@ export class DialogCreateEditAdsComponent {
     }
   }
   get urlImg(){
-    return this.data.srcPublicImage? this.data.srcPublicImage:
-    this.data.srcImageExpire? this.data.srcImageExpire: '';
+    return this.data?.srcPublicImage? this.data.srcPublicImage:
+    this.data?.srcImageExpire? this.data.srcImageExpire: '';
   }
 
   onFileSelectedAdd(event: any) {
