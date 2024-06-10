@@ -28,9 +28,9 @@ import { PayloadCreateAds } from '../../../models/payload-creatads.interface';
   styleUrl: './dialog-create-edit-ads.component.scss'
 })
 export class DialogCreateEditAdsComponent {
-  
+
   selectedFileAdd: any = null;
-  srcPreviewAdd: string | ArrayBuffer = this.data?.srcImageExpire?this.data.srcImageExpire:'';
+  srcPreviewAdd: string | ArrayBuffer = this.urlImg;
   arrayBufferForData: string | ArrayBuffer = '';
 
   formAds = this.fb.group({
@@ -62,6 +62,10 @@ export class DialogCreateEditAdsComponent {
       this.dialogRef.close(payload);
       return;
     }
+  }
+  get urlImg(){
+    return this.data.srcPublicImage? this.data.srcPublicImage:
+    this.data.srcImageExpire? this.data.srcImageExpire: '';
   }
 
   onFileSelectedAdd(event: any) {
