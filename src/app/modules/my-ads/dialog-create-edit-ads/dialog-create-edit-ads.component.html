@@ -3,7 +3,7 @@
  <form  [formGroup] = 'formAds' class="form-ads">
         <mat-form-field class="example-form-field">
             <mat-label>Titulo</mat-label>
-            <input matInput type="text" formControlName = 'title' placeholder="Titulo">
+            <input id="titleAds" matInput type="text" formControlName = 'title' placeholder="Titulo">
             @if (formAds.controls['title']) {
               <button matSuffix mat-icon-button aria-label="Clear"
               (click)="formAds.controls['title'].reset()">
@@ -17,7 +17,7 @@
     
         <mat-form-field class="descricao">
             <mat-label>Descrição</mat-label>
-            <textarea matInput placeholder="Descrição" formControlName="description"></textarea>
+            <textarea id="descriptionAds" matInput placeholder="Descrição" formControlName="description"></textarea>
             @if (formAds.controls['description'].hasError('required')) {
                 <mat-error>O campo descrição é  <strong>obrigatório</strong></mat-error>
               }
