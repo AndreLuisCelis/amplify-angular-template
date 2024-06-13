@@ -7,7 +7,7 @@ import outputs from '../../../amplify_outputs.json';
 import { AuthenticatorService } from '@aws-amplify/ui-angular';
 import { EditAdsInterface } from '../models/ads.interface';
 
-const mockAds = [
+export const mockAds = [
   {
     id: "1",
     title: "Anuncio 1",
@@ -36,7 +36,7 @@ const mockAds = [
   }
 ]
 
-const payloadMock =  {
+export const payloadMock =  {
   fileName: 'Teste',
   data: {
     id: '1',
@@ -71,8 +71,6 @@ describe('AdsService', () => {
     spyLisMyAds = spyOn(service , 'lisMyAds').and.returnValue(of(mockAds));
     spyGetUrlImage = spyOn(service, 'getUrlImage').and.callThrough();
 
-    spyOn(service , 'getListAds').and.returnValue(of(mockAds));
-    spyOn(service , 'getMyAds').and.returnValue(of(mockAds));
     spyOn(service, 'newAds').and.returnValue(Promise.resolve(mockAds[0]));
     spyOn(service, 'editAds').and.returnValue(Promise.resolve(mockAds[1]))
   });
@@ -82,13 +80,19 @@ describe('AdsService', () => {
   });
 
   it('should get list of ads', done => {
-    service.getListAds().subscribe( res => {
-      expect(res).toBe(mockAds);
+    let spyObserveQuery = spyOn(client.models.Ads, 'observeQuery').and.returnValue(of(mockAds))
+    service.getListAds().subscribe( () => {
+      expect(spyObserveQuery).toHaveBeenCalledTimes(1);
+      spyOn(service , 'getListAds').and.returnValue(of(mockAds));
+      service.getListAds().subscribe( res => {
+        expect(res).toBe(mockAds)
+      })
       done();
     })
   });
 
   it('should get list of myAds', done => {
+    spyOn(client.models.Ads, 'listMyAds').and.returnValue(of(mockAds))
     service.getMyAds().subscribe( res => {
       expect(res).toBe(mockAds);
       done();
@@ -126,4 +130,13 @@ describe('AdsService', () => {
       done();
     });
   });
+
+  it('should to calls deleteAds', done => {
+    spyOn(client.models.Ads, 'delete').and.returnValue(Promise.resolve({data:mockAds[0]}))
+      service.deleteAds(mockAds[0].id).subscribe( res => {
+        expect(res).toEqual(mockAds[0] as EditAdsInterface)
+        done();
+      })
+  });
+
 });

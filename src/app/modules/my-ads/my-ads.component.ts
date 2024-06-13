@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EditAdsInterface } from '../../models/ads.interface';
 import { DialogCreateEditAdsComponent } from './dialog-create-edit-ads/dialog-create-edit-ads.component';
 import { CommonModule } from '@angular/common';
@@ -62,8 +62,8 @@ export class MyAdsComponent {
   openModalCreateAd() {
     this.dialog.open(DialogCreateEditAdsComponent, {
       maxWidth: '100%',
-    }).afterClosed().subscribe({
-      next: async (payload: PayloadCreateAds) => {
+    })?.afterClosed().subscribe({
+      next: (payload: PayloadCreateAds) => {
         if (payload) {
           this.createAds(payload);
         }
@@ -71,16 +71,20 @@ export class MyAdsComponent {
     })
   }
 
-  openModalUpdateAd(ad: EditAdsInterface) {
-    this.dialog.open(DialogCreateEditAdsComponent, {
+  openModalUpdateAd(ad: EditAdsInterface): MatDialogRef<DialogCreateEditAdsComponent, any> {
+    console.log(ad)
+    let dialogRef = this.dialog.open(DialogCreateEditAdsComponent, {
       maxWidth: '100%',
       data: ad
-    }).afterClosed().subscribe({
-      next: async (payload: PayloadCreateAds) => {
+    })
+
+    dialogRef?.afterClosed().subscribe({
+      next:  (payload: PayloadCreateAds) => {
         if (payload) {
           this.updateAds(payload)
         }
       }
     })
+    return dialogRef;
   }
 }
