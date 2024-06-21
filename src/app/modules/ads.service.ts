@@ -79,15 +79,19 @@ export class AdsService {
         const dateB = new Date(myAds[indexSecondItem]?.createdAt as string).valueOf();
 
         if (dateA < dateB) {
-          let cretedAtMenor = myAds[indexFirstItem];
-          myAds[indexFirstItem] = myAds[indexSecondItem];
-          myAds[indexSecondItem] = cretedAtMenor
+          this.reversePosition(myAds, indexFirstItem, indexSecondItem);
         }
       }
     }
     return myAds;
   }
 
+  private reversePosition( myAds: EditAdsInterface[],indexFirstItem: number, indexSecondItem: number){
+    let copyFirstItem = myAds[indexFirstItem];
+    myAds[indexFirstItem] = myAds[indexSecondItem];
+    myAds[indexSecondItem] = copyFirstItem;
+ 
+  }
   getUrlImagesAds(ads: EditAdsInterface[]): EditAdsInterface[] {
     ads?.map(async (ad: EditAdsInterface, index) => {
       const imgForTestUrl = new Image();
